@@ -7,4 +7,6 @@ python main.py 5
 
 #### Controls:
 - **N**: Get new random points.
-- **ESC**: Quit.
+- **Space**: Pause/unpause.
+- **Enter**: Do a single update (only when paused).
+- **Esc**: Quit.

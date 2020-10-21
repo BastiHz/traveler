@@ -1,6 +1,5 @@
 import argparse
 import random
-import math
 from typing import List
 
 import pygame
@@ -15,77 +14,86 @@ BACKGROUND_COLRO = (32, 32, 32)
 POINT_COLOR = (255, 128, 0)
 LINE_COLOR = (0, 128, 0)
 SHORTEST_PATH_COLOR = (255, 128, 0)
+TEXT_COLOR = (255, 255, 255)
 POINT_RADIUS = 5
+BEST_LEN_MAX = 10
 MIN_DISTANCE = 50
 # Define a region for the text without points.
-MIN_Y = 100
-MIN_X = 300
+MIN_Y = 80
+MIN_X = 100
 
 
 class PointList:
-    def __init__(self, n: int, closed: bool, method: str = "greedy") -> None:
+    def __init__(self, n: int, closed: bool) -> None:
         self.n = n
         self.closed = closed
         # Pre-compute valid positions so points are not too close to each other.
         self.valid_positions = []
         for x in range(MIN_DISTANCE, WINDOW_WIDTH, MIN_DISTANCE):
             for y in range(MIN_DISTANCE, WINDOW_HEIGHT, MIN_DISTANCE):
-                if x > MIN_X or y > MIN_Y:
+                if x > MIN_X and y > MIN_Y:
                     self.valid_positions.append(pygame.Vector2(x, y))
-        self.points: List[pygame.Vector2] = []
-        self.shortest_path = self.points.copy()
-        self.distance = 0.0
-        self.shortest_distance = math.inf
         self.n_lines = n
         if not self.closed:
             self.n_lines -= 1
-        self.new_points()
-        self.update_distance()
+        self.make_new_points()
 
-        if method == "greedy":
-            self.update = self.greedy
-        elif method == "swap":
-            self.update = self.swap
+        # First do greedy and then try to improve it with swap.
+        self.shortest_path = self.greedy()
+        self.current_path = self.shortest_path
+        self.shortest_distance = self.get_distance(self.current_path)
+        self.current_distance = self.shortest_distance
 
-    def new_points(self) -> None:
-        self.points = random.sample(self.valid_positions, self.n)
-        self.shortest_distance = math.inf
-        self.update_distance()
+        self.i = 0
+        self.best = [f"{self.shortest_distance:.0f} ({self.i})"]
 
-    def update_distance(self) -> None:
-        self.distance = 0.0
+    def make_new_points(self) -> None:
+        self.current_path = random.sample(self.valid_positions, self.n)
+        self.current_distance = self.get_distance(self.current_path)
+        self.shortest_path = self.current_path
+        self.shortest_distance = self.current_distance
+
+    def update(self) -> None:
+        self.i += 1
+        self.current_path = self.swap()
+        self.current_distance = self.get_distance(self.current_path)
+        if self.current_distance < self.shortest_distance:
+            self.shortest_distance = self.current_distance
+            self.shortest_path = self.current_path.copy()
+            self.best.append(f"{self.shortest_distance:.0f} ({self.i})")
+            if len(self.best) > BEST_LEN_MAX:
+                self.best = self.best[1:]
+
+    def get_distance(self, points: List[pygame.Vector2]) -> float:
+        distance = 0.0
         for i in range(self.n_lines):
-            a = self.points[i]
-            b = self.points[(i + 1) % self.n]
-            self.distance += a.distance_to(b)
+            a = points[i]
+            b = points[(i + 1) % self.n]
+            distance += a.distance_to(b)
+        return distance
 
-        if self.distance < self.shortest_distance:
-            self.shortest_distance = self.distance
-            print(f"New shortest distance: {self.shortest_distance:.0f}")
-            self.shortest_path = self.points.copy()
-
-    def swap(self) -> None:
-        i, j = random.sample(range(self.n), 2)
-        self.points[i], self.points[j] = self.points[j], self.points[i]
-        self.update_distance()
-
-    def greedy(self) -> None:
-        points = self.points.copy()
+    def greedy(self) -> List[pygame.Vector2]:
+        points = self.shortest_path.copy()
         random.shuffle(points)
         greedy_path = [points.pop()]
         while points:
             distances = [greedy_path[-1].distance_squared_to(p) for p in points]
             min_dist_idx = distances.index(min(distances))
             greedy_path.append(points.pop(min_dist_idx))
-        self.points = greedy_path
-        self.update_distance()
+        return greedy_path
+
+    def swap(self) -> List[pygame.Vector2]:
+        points = self.shortest_path.copy()
+        i, j = random.sample(range(self.n), 2)
+        points[i], points[j] = points[j], points[i]
+        return points
 
     def draw(self, target_surface: pygame.surface.Surface) -> None:
         pygame.draw.aalines(
             target_surface,
             LINE_COLOR,
             self.closed,
-            self.points
+            self.current_path
         )
         pygame.draw.aalines(
             target_surface,
@@ -94,7 +102,7 @@ class PointList:
             self.shortest_path,
             0
         )
-        for p in self.points:
+        for p in self.current_path:
             pygame.draw.circle(
                 target_surface,
                 POINT_COLOR,
@@ -110,13 +118,13 @@ def run(n: int, path_open: bool) -> None:
     clock = pygame.time.Clock()
 
     points = PointList(n, not path_open)
-    points.greedy()
 
     font = pygame.freetype.SysFont("inconsolate, consolas, monospace", 16)
-    font.fgcolor = (255, 255, 255)
+    font.fgcolor = TEXT_COLOR
     line_spacing = pygame.Vector2(0, font.get_sized_height())
     text_margin = pygame.Vector2(5, 5)
 
+    paused = False
     running = True
     while running:
         clock.tick(FPS)
@@ -128,9 +136,14 @@ def run(n: int, path_open: bool) -> None:
                 if event.key == pygame.K_ESCAPE:
                     running = False
                 elif event.key == pygame.K_n:
-                    points.new_points()
+                    points.make_new_points()
+                elif event.key == pygame.K_SPACE:
+                    paused = not paused
+                elif event.key == pygame.K_RETURN and paused:
+                    points.update()
 
-        points.update()
+        if not paused:
+            points.update()
 
         window.fill(BACKGROUND_COLRO)
         points.draw(window)
@@ -142,13 +155,19 @@ def run(n: int, path_open: bool) -> None:
         font.render_to(
             window,
             text_margin + line_spacing,
-            f"current distance: {points.distance:.0f}"
+            f"current distance: {points.current_distance:.0f}"
         )
         font.render_to(
             window,
             text_margin + line_spacing * 2,
-            f"shortest distance: {points.shortest_distance:.0f}"
+            f"shortest distance (iterations):"
         )
+        for i, best in enumerate(points.best):
+            font.render_to(
+                window,
+                text_margin + line_spacing * (i + 3),
+                best
+            )
         pygame.display.flip()
 
 

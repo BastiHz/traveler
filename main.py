@@ -1,5 +1,6 @@
 import argparse
 import random
+from math import inf
 from typing import List
 
 import pygame
@@ -36,22 +37,22 @@ class PointList:
         self.n_lines = n
         if not self.closed:
             self.n_lines -= 1
-        self.make_new_points()
 
-        # First do greedy and then try to improve it with swap.
-        self.shortest_path = self.greedy()
-        self.current_path = self.shortest_path
-        self.shortest_distance = self.get_distance(self.current_path)
-        self.current_distance = self.shortest_distance
+        self.current_path: List[pygame.Vector2] = []
+        self.current_distance = inf
+        self.shortest_path = self.current_path
+        self.shortest_distance = self.current_distance
+        self.make_new_points()
 
         self.i = 0
         self.best = [f"{self.shortest_distance:.0f} ({self.i})"]
 
     def make_new_points(self) -> None:
-        self.current_path = random.sample(self.valid_positions, self.n)
-        self.current_distance = self.get_distance(self.current_path)
-        self.shortest_path = self.current_path
-        self.shortest_distance = self.current_distance
+        self.shortest_path = random.sample(self.valid_positions, self.n)
+        self.shortest_path = self.greedy()
+        self.shortest_distance = self.get_distance(self.shortest_path)
+        self.current_path = self.shortest_path
+        self.current_distance = self.shortest_distance
 
     def update(self) -> None:
         self.i += 1

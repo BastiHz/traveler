@@ -10,7 +10,7 @@ WINDOW_WIDTH = 1200
 WINDOW_HEIGHT = 800
 FPS = 60
 BACKGROUND_COLRO = (32, 32, 32)
-POINT_COLOR = (255, 128, 0)
+POINT_LINE_COLOR = (0, 255, 0)
 POINT_RADIUS = 5
 MIN_DISTANCE = 50
 VALID_POSITIONS = []
@@ -57,9 +57,9 @@ def run(n: int, path_open: bool) -> None:
                     points = random.sample(VALID_POSITIONS, n)
 
         window.fill(BACKGROUND_COLRO)
+        pygame.draw.aalines(window, POINT_LINE_COLOR, closed, points)
         for p in points:
-            pygame.draw.circle(window, POINT_COLOR, p, POINT_RADIUS)
-        pygame.draw.aalines(window, POINT_COLOR, closed, points)
+            pygame.draw.circle(window, POINT_LINE_COLOR, p, POINT_RADIUS)
 
         distance = get_distance(points, closed)
         font.render_to(window, (5, 5), f"{distance=:.2f}")

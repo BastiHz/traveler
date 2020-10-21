@@ -23,7 +23,7 @@ MIN_X = 300
 
 
 class PointList:
-    def __init__(self, n: int, closed: bool) -> None:
+    def __init__(self, n: int, closed: bool, method: str = "greedy") -> None:
         self.n = n
         self.closed = closed
         # Pre-compute valid positions so points are not too close to each other.
@@ -41,6 +41,11 @@ class PointList:
             self.n_lines -= 1
         self.new_points()
         self.update_distance()
+
+        if method == "greedy":
+            self.update = self.greedy
+        elif method == "swap":
+            self.update = self.swap
 
     def new_points(self) -> None:
         self.points = random.sample(self.valid_positions, self.n)
@@ -62,6 +67,17 @@ class PointList:
     def swap(self) -> None:
         i, j = random.sample(range(self.n), 2)
         self.points[i], self.points[j] = self.points[j], self.points[i]
+        self.update_distance()
+
+    def greedy(self) -> None:
+        points = self.points.copy()
+        random.shuffle(points)
+        greedy_path = [points.pop()]
+        while points:
+            distances = [greedy_path[-1].distance_squared_to(p) for p in points]
+            min_dist_idx = distances.index(min(distances))
+            greedy_path.append(points.pop(min_dist_idx))
+        self.points = greedy_path
         self.update_distance()
 
     def draw(self, target_surface: pygame.surface.Surface) -> None:
@@ -94,6 +110,7 @@ def run(n: int, path_open: bool) -> None:
     clock = pygame.time.Clock()
 
     points = PointList(n, not path_open)
+    points.greedy()
 
     font = pygame.freetype.SysFont("inconsolate, consolas, monospace", 16)
     font.fgcolor = (255, 255, 255)
@@ -113,7 +130,7 @@ def run(n: int, path_open: bool) -> None:
                 elif event.key == pygame.K_n:
                     points.new_points()
 
-        points.swap()
+        points.update()
 
         window.fill(BACKGROUND_COLRO)
         points.draw(window)

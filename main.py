@@ -56,6 +56,7 @@ class PointList:
 
         if self.distance < self.shortest_distance:
             self.shortest_distance = self.distance
+            print(f"New shortest distance: {self.shortest_distance:.0f}")
             self.shortest_path = self.points.copy()
 
     def swap(self) -> None:

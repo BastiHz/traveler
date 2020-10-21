@@ -1,6 +1,7 @@
 import argparse
 import random
-from typing import List, Optional
+import math
+from typing import List
 
 import pygame
 import pygame.freetype
@@ -27,15 +28,16 @@ class PointList:
                 self.valid_positions.append(pygame.Vector2(x, y))
         self.points: List[pygame.Vector2] = []
         self.distance = 0.0
+        self.shortest_distance = math.inf
         self.n_lines = n
         if not self.closed:
             self.n_lines -= 1
-
         self.new_points()
         self.update_distance()
 
     def new_points(self) -> None:
         self.points = random.sample(self.valid_positions, self.n)
+        self.shortest_distance = math.inf
         self.update_distance()
 
     def update_distance(self) -> None:
@@ -44,6 +46,9 @@ class PointList:
             a = self.points[i]
             b = self.points[(i + 1) % self.n]
             self.distance += a.distance_to(b)
+
+        if self.distance < self.shortest_distance:
+            self.shortest_distance = self.distance
 
     def swap(self) -> None:
         i, j = random.sample(range(self.n), 2)
@@ -76,6 +81,8 @@ def run(n: int, path_open: bool) -> None:
 
     font = pygame.freetype.SysFont("inconsolate, consolas, monospace", 16)
     font.fgcolor = (255, 255, 255)
+    line_spacing = pygame.Vector2(0, font.get_sized_height())
+    text_margin = pygame.Vector2(5, 5)
 
     running = True
     while running:
@@ -94,7 +101,21 @@ def run(n: int, path_open: bool) -> None:
 
         window.fill(BACKGROUND_COLRO)
         points.draw(window)
-        font.render_to(window, (5, 5), f"total distance: {points.distance:.0f}")
+        font.render_to(
+            window,
+            text_margin,
+            f"fps: {clock.get_fps():.0f}"
+        )
+        font.render_to(
+            window,
+            text_margin + line_spacing,
+            f"current distance: {points.distance:.0f}"
+        )
+        font.render_to(
+            window,
+            text_margin + line_spacing * 2,
+            f"shortest distance: {points.shortest_distance:.0f}"
+        )
         pygame.display.flip()
 
 

@@ -19,10 +19,6 @@ for x in range(MIN_DISTANCE, WINDOW_WIDTH, MIN_DISTANCE):
         VALID_POSITIONS.append(pygame.Vector2(x, y))
 
 
-def new_points(n: int) -> List:
-    return random.sample(VALID_POSITIONS, n)
-
-
 def get_distance(points: List[pygame.Vector2],
                  closed: bool) -> float:
     n_lines = len(points)
@@ -42,7 +38,7 @@ def run(n: int, path_open: bool) -> None:
     window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     clock = pygame.time.Clock()
 
-    points = new_points(n)
+    points = random.sample(VALID_POSITIONS, n)
     closed = not path_open
 
     font = pygame.freetype.SysFont("inconsolate, consolas, monospace", 16)
@@ -58,7 +54,7 @@ def run(n: int, path_open: bool) -> None:
                 if event.key == pygame.K_ESCAPE:
                     running = False
                 elif event.key == pygame.K_n:
-                    points = new_points(n)
+                    points = random.sample(VALID_POSITIONS, n)
 
         window.fill(BACKGROUND_COLRO)
         for p in points:

@@ -13,14 +13,14 @@ BACKGROUND_COLRO = (32, 32, 32)
 POINT_LINE_COLOR = (0, 255, 0)
 POINT_RADIUS = 5
 MIN_DISTANCE = 50
+# Pre-compute valid positions so points are not too close to each other.
 VALID_POSITIONS = []
 for x in range(MIN_DISTANCE, WINDOW_WIDTH, MIN_DISTANCE):
     for y in range(MIN_DISTANCE, WINDOW_HEIGHT, MIN_DISTANCE):
         VALID_POSITIONS.append(pygame.Vector2(x, y))
 
 
-def get_distance(points: List[pygame.Vector2],
-                 closed: bool) -> float:
+def get_distance(points: List[pygame.Vector2], closed: bool) -> float:
     n_lines = len(points)
     if not closed:
         n_lines -= 1
@@ -30,6 +30,11 @@ def get_distance(points: List[pygame.Vector2],
         b = points[(i + 1) % len(points)]
         distance += a.distance_to(b)
     return distance
+
+
+def swap(points: List) -> None:
+    i, j = random.sample(range(len(points)), 2)
+    points[i], points[j] = points[j], points[i]
 
 
 def run(n: int, path_open: bool) -> None:
@@ -55,6 +60,8 @@ def run(n: int, path_open: bool) -> None:
                     running = False
                 elif event.key == pygame.K_n:
                     points = random.sample(VALID_POSITIONS, n)
+
+        swap(points)
 
         window.fill(BACKGROUND_COLRO)
         pygame.draw.aalines(window, POINT_LINE_COLOR, closed, points)

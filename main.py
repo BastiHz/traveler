@@ -28,12 +28,6 @@ class PointList:
     def __init__(self, n: int, closed: bool) -> None:
         self.n = n
         self.closed = closed
-        # Pre-compute valid positions so points are not too close to each other.
-        self.valid_positions = []
-        for x in range(MIN_DISTANCE, WINDOW_WIDTH, MIN_DISTANCE):
-            for y in range(MIN_DISTANCE, WINDOW_HEIGHT, MIN_DISTANCE):
-                if x > MIN_X and y > MIN_Y:
-                    self.valid_positions.append(pygame.Vector2(x, y))
         self.n_lines = n
         if not self.closed:
             self.n_lines -= 1
@@ -48,7 +42,14 @@ class PointList:
         self.best = [f"{self.shortest_distance:.0f} ({self.i})"]
 
     def make_new_points(self) -> None:
-        self.shortest_path = random.sample(self.valid_positions, self.n)
+        new_points = []
+        for _ in range(self.n):
+            p = pygame.Vector2(
+                random.randrange(MIN_X, WINDOW_WIDTH),
+                random.randrange(MIN_Y, WINDOW_HEIGHT)
+            )
+            new_points.append(p)
+        self.shortest_path = new_points
         self.shortest_path = self.greedy()
         self.shortest_distance = self.get_distance(self.shortest_path)
         self.current_path = self.shortest_path

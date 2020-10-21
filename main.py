@@ -12,9 +12,14 @@ WINDOW_HEIGHT = 800
 FPS = 60
 
 BACKGROUND_COLRO = (32, 32, 32)
-POINT_LINE_COLOR = (0, 255, 0)
+POINT_COLOR = (255, 128, 0)
+LINE_COLOR = (0, 190, 0)
+SHORTEST_PATH_COLOR = (255, 128, 0)
 POINT_RADIUS = 5
 MIN_DISTANCE = 50
+# Define a region for the text without points.
+MIN_Y = 100
+MIN_X = 300
 
 
 class PointList:
@@ -25,8 +30,10 @@ class PointList:
         self.valid_positions = []
         for x in range(MIN_DISTANCE, WINDOW_WIDTH, MIN_DISTANCE):
             for y in range(MIN_DISTANCE, WINDOW_HEIGHT, MIN_DISTANCE):
-                self.valid_positions.append(pygame.Vector2(x, y))
+                if x > MIN_X or y > MIN_Y:
+                    self.valid_positions.append(pygame.Vector2(x, y))
         self.points: List[pygame.Vector2] = []
+        self.shortest_path = self.points.copy()
         self.distance = 0.0
         self.shortest_distance = math.inf
         self.n_lines = n
@@ -49,6 +56,7 @@ class PointList:
 
         if self.distance < self.shortest_distance:
             self.shortest_distance = self.distance
+            self.shortest_path = self.points.copy()
 
     def swap(self) -> None:
         i, j = random.sample(range(self.n), 2)
@@ -58,14 +66,21 @@ class PointList:
     def draw(self, target_surface: pygame.surface.Surface) -> None:
         pygame.draw.aalines(
             target_surface,
-            POINT_LINE_COLOR,
+            LINE_COLOR,
             self.closed,
             self.points
+        )
+        pygame.draw.aalines(
+            target_surface,
+            SHORTEST_PATH_COLOR,
+            self.closed,
+            self.shortest_path,
+            0
         )
         for p in self.points:
             pygame.draw.circle(
                 target_surface,
-                POINT_LINE_COLOR,
+                POINT_COLOR,
                 p,
                 POINT_RADIUS
             )

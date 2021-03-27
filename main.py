@@ -138,10 +138,12 @@ def run(n: int, path_open: bool, window_size: Tuple[int, int]) -> None:
                 if event.key == pygame.K_ESCAPE:
                     running = False
                 elif event.key == pygame.K_n:
+                    paused = True
                     points.make_new_points()
                 elif event.key == pygame.K_SPACE:
                     paused = not paused
-                elif event.key == pygame.K_RETURN and paused:
+                elif event.key == pygame.K_RETURN:
+                    paused = True
                     points.update()
 
         if not paused:

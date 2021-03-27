@@ -17,10 +17,11 @@ SHORTEST_PATH_COLOR = (255, 128, 0)
 TEXT_COLOR = (255, 255, 255)
 POINT_RADIUS = 5
 BEST_LEN_MAX = 10
-MIN_DISTANCE = 50
-# Define a region for the text without points.
-MIN_Y = 80
-MIN_X = 100
+MIN_DISTANCE = POINT_RADIUS * 4  # Min distance between points. TODO: implement this.
+MARGIN_LEFT = 80  # space for the text
+MARGIN_TOP = 100  # space for the text
+MARGIN_RIGHT = 10
+MARGIN_BOTTOM = 10
 
 
 class PointList:
@@ -45,8 +46,8 @@ class PointList:
         new_points = []
         for _ in range(self.n):
             p = pygame.Vector2(
-                random.randrange(MIN_X, self.window_width),
-                random.randrange(MIN_Y, self.window_height)
+                random.randrange(MARGIN_TOP, self.window_width - MARGIN_RIGHT),
+                random.randrange(MARGIN_LEFT, self.window_height - MARGIN_BOTTOM)
             )
             new_points.append(p)
         self.shortest_path = new_points

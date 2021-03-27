@@ -1,14 +1,13 @@
 import argparse
 import random
 from math import inf
-from typing import List
+from typing import List, Tuple
 
 import pygame
 import pygame.freetype
 
 
-WINDOW_WIDTH = 1200
-WINDOW_HEIGHT = 800
+DEFAULT_WINDOW_SIZE = (800, 600)
 FPS = 60
 
 BACKGROUND_COLRO = (32, 32, 32)
@@ -25,9 +24,10 @@ MIN_X = 100
 
 
 class PointList:
-    def __init__(self, n: int, closed: bool) -> None:
+    def __init__(self, n: int, closed: bool, window_size: Tuple[int, int]) -> None:
         self.n = n
         self.closed = closed
+        self.window_width, self.window_height = window_size
         self.n_lines = n
         if not self.closed:
             self.n_lines -= 1
@@ -45,8 +45,8 @@ class PointList:
         new_points = []
         for _ in range(self.n):
             p = pygame.Vector2(
-                random.randrange(MIN_X, WINDOW_WIDTH),
-                random.randrange(MIN_Y, WINDOW_HEIGHT)
+                random.randrange(MIN_X, self.window_width),
+                random.randrange(MIN_Y, self.window_height)
             )
             new_points.append(p)
         self.shortest_path = new_points
@@ -113,13 +113,13 @@ class PointList:
             )
 
 
-def run(n: int, path_open: bool) -> None:
+def run(n: int, path_open: bool, window_size: Tuple[int, int]) -> None:
     pygame.init()
     pygame.display.set_caption("traveling salesperson")
-    window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+    window = pygame.display.set_mode(window_size)
     clock = pygame.time.Clock()
 
-    points = PointList(n, not path_open)
+    points = PointList(n, not path_open, window_size)
 
     font = pygame.freetype.SysFont("inconsolate, consolas, monospace", 16)
     font.fgcolor = TEXT_COLOR
@@ -176,7 +176,20 @@ def run(n: int, path_open: bool) -> None:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("n", type=int, help="Number of points.")
-    parser.add_argument("-o", "--open", action="store_true",
-                        help="Don't let the path return to the beginning.")
+    parser.add_argument(
+        "-o",
+        "--open",
+        action="store_true",
+        help="Don't let the path return to the beginning."
+    )
+    parser.add_argument(
+        "-w",
+        "--window-size",
+        metavar=("<width>", "<height>"),
+        nargs=2,
+        type=int,
+        help="Specify the window width and height in pixels.",
+        default=DEFAULT_WINDOW_SIZE
+    )
     args = parser.parse_args()
-    run(args.n, args.open)
+    run(args.n, args.open, args.window_size)

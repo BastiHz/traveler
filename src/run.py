@@ -1,4 +1,3 @@
-import argparse
 import random
 from math import inf
 from typing import List, Tuple
@@ -7,10 +6,8 @@ import pygame
 import pygame.freetype
 
 
-DEFAULT_WINDOW_SIZE = (800, 600)
 FPS = 60
-
-BACKGROUND_COLRO = (32, 32, 32)
+BACKGROUND_COLOR = (32, 32, 32)
 POINT_COLOR = (255, 128, 0)
 LINE_COLOR = (0, 128, 0)
 SHORTEST_PATH_COLOR = (255, 128, 0)
@@ -152,7 +149,7 @@ def run(n: int, path_open: bool, window_size: Tuple[int, int]) -> None:
         if not paused:
             points.update()
 
-        window.fill(BACKGROUND_COLRO)
+        window.fill(BACKGROUND_COLOR)
         points.draw(window)
         font.render_to(
             window,
@@ -176,25 +173,3 @@ def run(n: int, path_open: bool, window_size: Tuple[int, int]) -> None:
                 best
             )
         pygame.display.flip()
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("n", type=int, help="Number of points.")
-    parser.add_argument(
-        "-o",
-        "--open",
-        action="store_true",
-        help="Don't let the path return to the beginning."
-    )
-    parser.add_argument(
-        "-w",
-        "--window-size",
-        metavar=("<width>", "<height>"),
-        nargs=2,
-        type=int,
-        help="Specify the window width and height in pixels.",
-        default=DEFAULT_WINDOW_SIZE
-    )
-    args = parser.parse_args()
-    run(args.n, args.open, args.window_size)

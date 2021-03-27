@@ -126,7 +126,7 @@ def run(n: int, path_open: bool, window_size: Tuple[int, int]) -> None:
     line_spacing = pygame.Vector2(0, font.get_sized_height())
     text_margin = pygame.Vector2(5, 5)
 
-    paused = False
+    paused = True
     running = True
     while running:
         clock.tick(FPS)

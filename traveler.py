@@ -12,12 +12,6 @@ parser.add_argument(
     help="Number of points."
 )
 parser.add_argument(
-    "-o",
-    "--open",
-    action="store_true",
-    help="Don't let the path return to the beginning."
-)
-parser.add_argument(
     "-w",
     "--window-size",
     metavar=("<width>", "<height>"),
@@ -27,4 +21,4 @@ parser.add_argument(
     default=(800, 600)
 )
 args = parser.parse_args()
-run.run(args.n, args.open, args.window_size)
+run.run(args.n, args.window_size)

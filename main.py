@@ -40,7 +40,7 @@ class PointList:
         self.make_new_points()
 
         self.i = 0
-        self.best = [f"{self.shortest_distance:.0f} ({self.i})"]
+        self.best = [f"{self.shortest_distance:.0f} ({self.i})"]  # TODO: use fixed size deque?
 
     def make_new_points(self) -> None:
         new_points = []
@@ -53,6 +53,8 @@ class PointList:
         self.shortest_path = new_points
         self.shortest_path = self.greedy()
         self.shortest_distance = self.get_distance(self.shortest_path)
+        self.i = 0
+        self.best = [f"{self.shortest_distance:.0f} ({self.i})"]
         self.current_path = self.shortest_path
         self.current_distance = self.shortest_distance
 

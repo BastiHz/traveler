@@ -5,3 +5,11 @@
 #     i, j = random.sample(range(self.n), 2)
 #     points[i], points[j] = points[j], points[i]
 #     return points
+
+
+class SimpleSwap:
+    def __init__(self):
+        pass
+
+    def update(self):
+        pass

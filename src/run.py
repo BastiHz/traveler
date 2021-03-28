@@ -4,8 +4,8 @@ import pygame
 import pygame.freetype
 
 from src.points import Points
-# from src.greedy import Greedy
-# from src.simple_swap import simple_swap
+from src.pathfinders import greedy
+from src.pathfinders import simple_swap
 
 
 FPS = 60
@@ -15,6 +15,10 @@ POINT_COLOR = (255, 128, 0)
 LINE_COLOR = (0, 128, 0)
 SHORTEST_PATH_COLOR = (255, 128, 0)
 POINT_RADIUS = 5
+PATHFINDERS = {
+    "greedy": greedy.Greedy,
+    "simple_swap": simple_swap.SimpleSwap
+}
 
 
 def run(n: int, window_size: Tuple[int, int], min_distance: int) -> None:
@@ -24,7 +28,7 @@ def run(n: int, window_size: Tuple[int, int], min_distance: int) -> None:
     clock = pygame.time.Clock()
 
     points = Points(n, window_size, min_distance)
-    # algorithm = Greedy(points)
+    pathfinder = PATHFINDERS["greedy"](points)  # TODO: Get name from command line argument.
 
     font = pygame.freetype.SysFont("inconsolate, consolas, monospace", 16)
     font.fgcolor = TEXT_COLOR
@@ -44,15 +48,15 @@ def run(n: int, window_size: Tuple[int, int], min_distance: int) -> None:
                     running = False
                 elif event.key == pygame.K_n:
                     paused = True
-                    points.generate_points()
+                    points.make_new_points()
                 elif event.key == pygame.K_SPACE:
                     paused = not paused
                 elif event.key == pygame.K_RETURN:
                     paused = True
                     # algorithm.update()
 
-        # if not paused:
-        #     algorithm.update()
+        if not paused:
+            pathfinder.update()
 
         window.fill(BACKGROUND_COLOR)
 

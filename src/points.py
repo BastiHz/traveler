@@ -4,7 +4,6 @@ import random
 import pygame
 
 
-BEST_LEN_MAX = 10
 MARGIN_LEFT = 80  # space for the text
 MARGIN_TOP = 100  # space for the text
 MARGIN_RIGHT = 20
@@ -16,25 +15,13 @@ class Points:
         self.n = n
         self.window_width, self.window_height = window_size
         self.min_distance = min_distance
-        self.points: Tuple[pygame.Vector2, ...] = ()
-        self.generate_points()
-
-        # TODO: Distance matrix for improved speed? Pre-calculate all distances
-        #  so it is not necessary to do every update.
+        self.points = self.generate_points()
+        self.distances = self.calculate_distances()
 
         # TODO: Method to return the distances from one point to all other points?
         # TODO: Maybe the algorithm just needs the indices and Points handles the coordinates?
 
-        # self.n_lines = n
-        # self.current_path: List[pygame.Vector2] = []
-        # self.current_distance = inf
-        # self.shortest_path = self.current_path
-        # self.shortest_distance = self.current_distance
-
-        # self.i = 0
-        # self.best = [f"{self.shortest_distance:.0f} ({self.i})"]  # TODO: use fixed size deque?
-
-    def generate_points(self) -> None:
+    def generate_points(self) -> Tuple[pygame.Vector2, ...]:
         new_points: List[pygame.Vector2] = []
         check_min_distance = True
         tries = 0
@@ -60,11 +47,27 @@ class Points:
                     check_min_distance = False
             else:
                 new_points.append(new_point)
-        self.points = tuple(new_points)
+        return tuple(new_points)
 
-    def get_distance(self, path: Sequence[pygame.Vector2]) -> float:
-        distance = 0.0
-        for i, p1 in enumerate(path):
-            p2 = path[(i + 1) % self.n]
-            distance += p1.distance_to(p2)
-        return distance
+    def calculate_distances(self) -> Tuple[Tuple[float, ...]]:
+        # I could half the required space by only using a traingle of the distance matrix.
+        # But then each time I want to query a distance I would need to check which
+        # index is bigger than the other to get the correct row and column.
+        # Then I could also remove the zero-diagonal.
+        distances = [[0.0] * self.n for _ in range(self.n)]
+        for i, p1 in enumerate(self.points[:-1]):
+            for j, p2 in enumerate(self.points[i+1:], i + 1):
+                distances[i][j] = distances[j][i] = p1.distance_to(p2)
+        return tuple(tuple(x) for x in distances)
+
+    def make_new_points(self):
+        self.points = self.generate_points()
+        self.distances = self.calculate_distances()
+
+    # def get_distance(self, path: Sequence[pygame.Vector2]) -> float:
+    #     distance = 0.0
+    #     for i, p1 in enumerate(path):
+    #         p2 = path[(i + 1) % self.n]
+    #         distance += p1.distance_to(p2)
+    #     return distance
+    # TODO: the path argument should be a sequence of indices instead of points

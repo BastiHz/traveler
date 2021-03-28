@@ -7,6 +7,7 @@ python main.py 5
 
 ### Optional Command Line Arguments
 - **-w**, **--window-size \<width> \<height>**: Customize the window width and height.
+- **-m**, **--min-distance \<min-distance>**: Minimum distance between points.
 
 ### Controls:
 Action | Binding

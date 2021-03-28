@@ -20,5 +20,13 @@ parser.add_argument(
     help="Specify the window width and height in pixels.",
     default=(800, 600)
 )
+parser.add_argument(
+    "-m",
+    "--min-distance",
+    metavar="<min-distance>",
+    type=int,
+    help="Minimum distance between points.",
+    default=15
+)
 args = parser.parse_args()
-run.run(args.n, args.window_size)
+run.run(args.n, args.window_size, args.min_distance)

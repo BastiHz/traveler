@@ -1,21 +1,21 @@
-from typing import Sequence, Tuple
+from typing import List, Sequence, Tuple
 import random
 
 import pygame
 
 
 BEST_LEN_MAX = 10
-MIN_DISTANCE = 20  # Min distance between points. TODO: implement this.
 MARGIN_LEFT = 80  # space for the text
 MARGIN_TOP = 100  # space for the text
-MARGIN_RIGHT = 10
-MARGIN_BOTTOM = 10
+MARGIN_RIGHT = 20
+MARGIN_BOTTOM = 20
 
 
 class Points:
-    def __init__(self, n: int, window_size: Tuple[int, int]):
+    def __init__(self, n: int, window_size: Tuple[int, int], min_distance: int):
         self.n = n
         self.window_width, self.window_height = window_size
+        self.min_distance = min_distance
         self.points: Tuple[pygame.Vector2, ...] = ()
         self.generate_points()
 
@@ -35,13 +35,31 @@ class Points:
         # self.best = [f"{self.shortest_distance:.0f} ({self.i})"]  # TODO: use fixed size deque?
 
     def generate_points(self) -> None:
-        new_points = []
-        for _ in range(self.n):
-            p = pygame.Vector2(
+        new_points: List[pygame.Vector2] = []
+        check_min_distance = True
+        tries = 0
+        # Make 1000 tries to place a point with enough space around it.
+        # If that fails then place it and the rest of the points anywhere.
+        while len(new_points) < self.n:
+            new_point = pygame.Vector2(
                 random.randrange(MARGIN_TOP, self.window_width - MARGIN_RIGHT),
                 random.randrange(MARGIN_LEFT, self.window_height - MARGIN_BOTTOM)
             )
-            new_points.append(p)
+            if check_min_distance:
+                tries += 1
+                for p in new_points:
+                    if p.distance_to(new_point) < self.min_distance:
+                        break
+                else:
+                    # Point can be placed outside minimum distance.
+                    new_points.append(new_point)
+                    tries = 0
+                if tries >= 1000:
+                    # Not enough space, min distance not obeyed, place all other points anywhere.
+                    print("Warning: Could not keep minimum distance between points.")
+                    check_min_distance = False
+            else:
+                new_points.append(new_point)
         self.points = tuple(new_points)
 
     def get_distance(self, path: Sequence[pygame.Vector2]) -> float:

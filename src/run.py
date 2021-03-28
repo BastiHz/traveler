@@ -17,13 +17,13 @@ SHORTEST_PATH_COLOR = (255, 128, 0)
 POINT_RADIUS = 5
 
 
-def run(n: int, window_size: Tuple[int, int]) -> None:
+def run(n: int, window_size: Tuple[int, int], min_distance: int) -> None:
     pygame.init()
     pygame.display.set_caption("traveling salesperson")
     window = pygame.display.set_mode(window_size)
     clock = pygame.time.Clock()
 
-    points = Points(n, window_size)
+    points = Points(n, window_size, min_distance)
     # algorithm = Greedy(points)
 
     font = pygame.freetype.SysFont("inconsolate, consolas, monospace", 16)

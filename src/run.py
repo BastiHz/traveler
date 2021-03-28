@@ -49,17 +49,32 @@ def run(n: int, window_size: Tuple[int, int], min_distance: int) -> None:
                 elif event.key == pygame.K_n:
                     paused = True
                     points.make_new_points()
+                    pathfinder.reset()
                 elif event.key == pygame.K_SPACE:
                     paused = not paused
                 elif event.key == pygame.K_RETURN:
                     paused = True
-                    # algorithm.update()
+                    pathfinder.update()
 
         if not paused:
             pathfinder.update()
 
         window.fill(BACKGROUND_COLOR)
 
+        if pathfinder.current_path:
+            pygame.draw.aalines(
+                window,
+                LINE_COLOR,
+                True,
+                pathfinder.current_path
+            )
+        if pathfinder.shortest_path:
+            pygame.draw.aalines(
+                window,
+                SHORTEST_PATH_COLOR,
+                True,
+                pathfinder.shortest_path
+            )
         for p in points.points:
             pygame.draw.circle(
                 window,
@@ -67,9 +82,6 @@ def run(n: int, window_size: Tuple[int, int], min_distance: int) -> None:
                 p,
                 POINT_RADIUS
             )
-
-        # (draw paths)
-        # draw shortest path
 
         font.render_to(
             window,

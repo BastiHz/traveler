@@ -8,8 +8,8 @@
 
 
 class SimpleSwap:
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
-    def update(self):
+    def update(self) -> None:
         pass

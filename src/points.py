@@ -1,4 +1,4 @@
-from typing import List, Sequence, Tuple
+from typing import List, Tuple
 import random
 
 import pygame
@@ -17,9 +17,6 @@ class Points:
         self.min_distance = min_distance
         self.points = self.generate_points()
         self.distances = self.calculate_distances()
-
-        # TODO: Method to return the distances from one point to all other points?
-        # TODO: Maybe the algorithm just needs the indices and Points handles the coordinates?
 
     def generate_points(self) -> Tuple[pygame.Vector2, ...]:
         new_points: List[pygame.Vector2] = []
@@ -49,7 +46,7 @@ class Points:
                 new_points.append(new_point)
         return tuple(new_points)
 
-    def calculate_distances(self) -> Tuple[Tuple[float, ...]]:
+    def calculate_distances(self) -> Tuple[Tuple[float, ...], ...]:
         # I could half the required space by only using a traingle of the distance matrix.
         # But then each time I want to query a distance I would need to check which
         # index is bigger than the other to get the correct row and column.
@@ -60,7 +57,7 @@ class Points:
                 distances[i][j] = distances[j][i] = p1.distance_to(p2)
         return tuple(tuple(x) for x in distances)
 
-    def make_new_points(self):
+    def make_new_points(self) -> None:
         self.points = self.generate_points()
         self.distances = self.calculate_distances()
 

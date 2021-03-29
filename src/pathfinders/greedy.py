@@ -1,20 +1,18 @@
 # Greedy search. Connect to the next closest point.
 
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING
 import random
 from math import inf
 
+from src.pathfinders.pathfinder import Pathfinder
+
 if TYPE_CHECKING:
     from src.points import Points
-    from pygame import Vector2
 
 
-class Greedy:
+class Greedy(Pathfinder):
     def __init__(self, points_container: "Points"):
-        self.points_container = points_container
-        self.current_path: List[Vector2] = []
-        self.shortest_path: List[Vector2] = []
-        self.shortest_distance = inf
+        super().__init__(points_container)
 
     def update(self) -> None:
         # Choose random start index. Then go to the next closest point.
@@ -36,9 +34,3 @@ class Greedy:
         if current_distance < self.shortest_distance:
             self.shortest_distance = current_distance
             self.shortest_path = self.current_path
-
-    def reset(self) -> None:
-        # FIXME: Put this into a superclass for all pathfinders because it will be the same.
-        self.current_path = []
-        self.shortest_path = []
-        self.shortest_distance = inf

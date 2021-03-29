@@ -28,7 +28,7 @@ def run(n: int, window_size: Tuple[int, int], min_distance: int) -> None:
     clock = pygame.time.Clock()
 
     points = Points(n, window_size, min_distance)
-    pathfinder = PATHFINDERS["greedy"](points)  # TODO: Get name from command line argument.
+    pathfinder = PATHFINDERS["simple_swap"](points)  # TODO: Get name from command line argument.
 
     font = pygame.freetype.SysFont("inconsolate, consolas, monospace", 16)
     font.fgcolor = TEXT_COLOR

@@ -18,7 +18,7 @@ class Points:
         self.points = self.generate_points()
         self.distances = self.calculate_distances()
 
-    def generate_points(self) -> Tuple[pygame.Vector2, ...]:
+    def generate_points(self) -> Sequence[pygame.Vector2]:
         new_points: List[pygame.Vector2] = []
         check_min_distance = True
         tries = 0
@@ -44,9 +44,9 @@ class Points:
                     check_min_distance = False
             else:
                 new_points.append(new_point)
-        return tuple(new_points)
+        return new_points
 
-    def calculate_distances(self) -> Tuple[Tuple[float, ...], ...]:
+    def calculate_distances(self) -> Sequence[Sequence[float]]:
         # I could half the required space by only using a traingle of the distance matrix.
         # But then each time I want to query a distance I would need to check which
         # index is bigger than the other to get the correct row and column.
@@ -55,7 +55,7 @@ class Points:
         for i, p1 in enumerate(self.points[:-1]):
             for j, p2 in enumerate(self.points[i+1:], i + 1):
                 distances[i][j] = distances[j][i] = p1.distance_to(p2)
-        return tuple(tuple(x) for x in distances)
+        return distances
 
     def make_new_points(self) -> None:
         self.points = self.generate_points()
@@ -66,5 +66,5 @@ class Points:
         indices = [self.points.index(p) for p in path]
         for i, point_index in enumerate(indices[:-1]):
             distance += self.distances[point_index][indices[i+1]]
-        distance += self.distances[indices[0]][indices[-1]]  # distance between first and last point
+        distance += self.distances[indices[-1]][indices[0]]  # between last and first point
         return distance

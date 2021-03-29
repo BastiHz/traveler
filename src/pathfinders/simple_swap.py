@@ -30,13 +30,10 @@ class SimpleSwap(Pathfinder):
         self.current_path = self.shortest_path.copy()
         self.current_path[i], self.current_path[j] = self.current_path[j], self.current_path[i]
         new_distance = self.points_container.calculate_total_distance(self.current_path)
-        # TODO: hier weiter
-
-
-
+        if new_distance < self.shortest_distance:
+            self.shortest_distance = new_distance
+            self.shortest_path = self.current_path
 
     def reset(self):
         self.g.reset()
         super().reset()
-        self.current_path_indices = []
-        self.shortest_path_indices = []

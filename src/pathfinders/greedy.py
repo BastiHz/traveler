@@ -21,6 +21,7 @@ class Greedy(Pathfinder):
         self.current_path = [self.points_container.points[i]]
         seen = {i}
         current_distance = 0.0
+        first_index = i
         while len(self.current_path) < self.points_container.n:
             distances = self.points_container.distances[i]
             min_distance = inf
@@ -31,7 +32,7 @@ class Greedy(Pathfinder):
             self.current_path.append(self.points_container.points[i])
             current_distance += min_distance
             seen.add(i)
-
+        current_distance += self.points_container.distances[i][first_index]  # between last and first point
         if current_distance < self.shortest_distance:
             self.shortest_distance = current_distance
             self.shortest_path = self.current_path

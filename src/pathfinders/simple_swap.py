@@ -23,16 +23,20 @@ class SimpleSwap(Pathfinder):
             self.current_path = self.g.current_path
             self.shortest_path = self.g.shortest_path
             self.shortest_distance = self.g.shortest_distance
+            self.current_distance = self.g.current_distance
+            self.records.append(f"{self.shortest_distance:.0f} ({self.iteration})")
             self.iteration = 1
             return
+
         self.iteration += 1
         i, j = random.sample(range(self.points_container.n), 2)
         self.current_path = self.shortest_path.copy()
         self.current_path[i], self.current_path[j] = self.current_path[j], self.current_path[i]
-        new_distance = self.points_container.calculate_total_distance(self.current_path)
-        if new_distance < self.shortest_distance:
-            self.shortest_distance = new_distance
+        self.current_distance = self.points_container.calculate_total_distance(self.current_path)
+        if self.current_distance < self.shortest_distance:
+            self.shortest_distance = self.current_distance
             self.shortest_path = self.current_path
+            self.records.append(f"{self.shortest_distance:.0f} ({self.iteration})")
 
     def reset(self):
         self.g.reset()

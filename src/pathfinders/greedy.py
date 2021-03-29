@@ -16,11 +16,10 @@ class Greedy(Pathfinder):
 
     def update(self) -> None:
         # Choose random start index. Then go to the next closest point.
-        self.iteration += 1
         i = random.randint(0, self.points_container.n - 1)
         self.current_path = [self.points_container.points[i]]
         seen = {i}
-        current_distance = 0.0
+        self.current_distance = 0.0
         first_index = i
         while len(self.current_path) < self.points_container.n:
             distances = self.points_container.distances[i]
@@ -30,9 +29,13 @@ class Greedy(Pathfinder):
                     min_distance = d
                     i = j
             self.current_path.append(self.points_container.points[i])
-            current_distance += min_distance
+            self.current_distance += min_distance
             seen.add(i)
-        current_distance += self.points_container.distances[i][first_index]  # between last and first point
-        if current_distance < self.shortest_distance:
-            self.shortest_distance = current_distance
+        self.current_distance += self.points_container.distances[i][first_index]  # between last and first point
+        if self.current_distance < self.shortest_distance:
+            self.shortest_distance = self.current_distance
             self.shortest_path = self.current_path
+            self.records.append(f"{self.shortest_distance:.0f} ({self.iteration})")
+            # FIXME: Why are there sometimes records of the same distance?
+            #  Is there a small difference after the decimal?
+        self.iteration += 1

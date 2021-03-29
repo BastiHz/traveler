@@ -11,8 +11,10 @@ class Pathfinder:
         self.points_container = points_container
         self.current_path: List[Vector2] = []
         self.shortest_path: List[Vector2] = []
+        self.current_distance = 0.0
         self.shortest_distance = inf
         self.iteration = 0
+        self.records = []
 
     def update(self) -> None:
         raise NotImplementedError
@@ -22,3 +24,5 @@ class Pathfinder:
         self.current_path = []
         self.shortest_path = []
         self.shortest_distance = inf
+        self.current_distance = 0.0
+        self.records = []

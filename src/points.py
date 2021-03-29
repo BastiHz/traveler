@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, Sequence, Tuple
 import random
 
 import pygame
@@ -61,10 +61,10 @@ class Points:
         self.points = self.generate_points()
         self.distances = self.calculate_distances()
 
-    # def get_distance(self, path: Sequence[pygame.Vector2]) -> float:
-    #     distance = 0.0
-    #     for i, p1 in enumerate(path):
-    #         p2 = path[(i + 1) % self.n]
-    #         distance += p1.distance_to(p2)
-    #     return distance
-    # TODO: the path argument should be a sequence of indices instead of points
+    def calculate_total_distance(self, path: Sequence[pygame.Vector2]) -> float:
+        distance = 0.0
+        indices = [self.points.index(p) for p in path]
+        for i, point_index in enumerate(indices[:-1]):
+            distance += self.distances[point_index][indices[i+1]]
+        distance += self.distances[indices[0]][indices[-1]]  # distance between first and last point
+        return distance

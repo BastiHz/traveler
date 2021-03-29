@@ -12,11 +12,13 @@ class Pathfinder:
         self.current_path: List[Vector2] = []
         self.shortest_path: List[Vector2] = []
         self.shortest_distance = inf
+        self.iteration = 0
 
     def update(self) -> None:
         raise NotImplementedError
 
     def reset(self) -> None:
+        self.iteration = 0
         self.current_path = []
         self.shortest_path = []
         self.shortest_distance = inf

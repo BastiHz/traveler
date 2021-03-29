@@ -16,6 +16,7 @@ class Greedy(Pathfinder):
 
     def update(self) -> None:
         # Choose random start index. Then go to the next closest point.
+        self.iteration += 1
         i = random.randint(0, self.points_container.n - 1)
         self.current_path = [self.points_container.points[i]]
         seen = {i}

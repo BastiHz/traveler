@@ -91,17 +91,22 @@ def run(n: int, window_size: Tuple[int, int], min_distance: int) -> None:
         font.render_to(
             window,
             text_margin + line_spacing,
-            f"current distance: {pathfinder.current_distance:.0f}"
+            f"iteration: {pathfinder.iteration:.0f}"
         )
         font.render_to(
             window,
             text_margin + line_spacing * 2,
+            f"distance: {pathfinder.current_distance:.0f}"
+        )
+        font.render_to(
+            window,
+            text_margin + line_spacing * 3,
             f"shortest distance (iterations):"
         )
         for i, text in enumerate(pathfinder.records[-20:]):  # only show the last 20 records
             font.render_to(
                 window,
-                text_margin + line_spacing * (i + 3),
+                text_margin + line_spacing * (i + 4),
                 text
             )
 

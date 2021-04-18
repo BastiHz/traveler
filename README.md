@@ -6,13 +6,13 @@ python main.py 5
 ```
 
 ### Optional Command Line Arguments
-- **-w**, **--window-size \<width> \<height>**: Customize the window width and height.
-- **-m**, **--min-distance \<min-distance>**: Minimum distance between points.
+- -w, --window-size \<width> \<height>: Customize the window width and height.
+- -m, --min-distance \<min-distance>: Minimum distance between points.
 
 ### Controls:
 Action | Binding
 --- | ---
-Generate new random points | **N**
-Pause/unpause | **Space**
-Do a single update | **Enter**
-Quit | **Esc**
+Generate new random points | N
+Pause/unpause | Space
+Do a single update | Enter
+Quit | Esc
